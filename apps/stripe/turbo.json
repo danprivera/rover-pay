@@ -8,6 +8,7 @@
         "APL",
         "STORAGE",
         "DATABASE_URL",
+        "NEXT_OUTPUT",
         "APP_API_BASE_URL",
         "APP_IFRAME_BASE_URL",
         "MANIFEST_APP_ID",
