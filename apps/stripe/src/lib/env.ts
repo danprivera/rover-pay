@@ -14,7 +14,14 @@ export const env = createEnv({
   server: {
     ...newSecretKeyServerSchema,
     ALLOWED_DOMAIN_PATTERN: z.string().optional(),
-    APL: z.enum(["saleor-cloud", "file", "dynamodb"]).default("file"),
+    APL: z.enum(["saleor-cloud", "file", "dynamodb", "postgres"]).default("file"),
+    /*
+     * Rover Pay: where configs and recorded transactions live. "dynamodb" is
+     * upstream's default and stays untouched; "postgres" runs on Azure
+     * (rovershop-storefront#173) and needs DATABASE_URL.
+     */
+    STORAGE: z.enum(["dynamodb", "postgres"]).default("dynamodb"),
+    DATABASE_URL: z.string().optional(),
     APP_API_BASE_URL: z.string().optional(),
     APP_IFRAME_BASE_URL: z.string().optional(),
     APP_LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),
@@ -28,10 +35,11 @@ export const env = createEnv({
     VERCEL_ENV: z.string().optional(),
     VERCEL_GIT_COMMIT_SHA: z.string().optional(),
     STRIPE_PARTNER_ID: z.string().optional(),
-    DYNAMODB_MAIN_TABLE_NAME: z.string(),
+    // Optional: only the DynamoDB storage/APL read these (Rover Pay runs on Postgres).
+    DYNAMODB_MAIN_TABLE_NAME: z.string().optional(),
     DYNAMODB_REQUEST_TIMEOUT_MS: z.coerce.number().default(5_000),
     DYNAMODB_CONNECTION_TIMEOUT_MS: z.coerce.number().default(2_000),
-    AWS_REGION: z.string(),
+    AWS_REGION: z.string().optional(),
     AWS_ACCESS_KEY_ID: z.string().optional(),
     AWS_SECRET_ACCESS_KEY: z.string().optional(),
     AWS_ROLE_ARN: z.string().optional(),
@@ -47,6 +55,8 @@ export const env = createEnv({
     ...newSecretKeyRuntimeEnv,
     ALLOWED_DOMAIN_PATTERN: process.env.ALLOWED_DOMAIN_PATTERN,
     APL: process.env.APL,
+    STORAGE: process.env.STORAGE,
+    DATABASE_URL: process.env.DATABASE_URL,
     APP_API_BASE_URL: process.env.APP_API_BASE_URL,
     APP_IFRAME_BASE_URL: process.env.APP_IFRAME_BASE_URL,
     APP_LOG_LEVEL: process.env.APP_LOG_LEVEL,

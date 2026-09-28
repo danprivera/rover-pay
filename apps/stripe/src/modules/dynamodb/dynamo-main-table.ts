@@ -71,5 +71,9 @@ const documentClient = createDynamoDBDocumentClient(client);
 
 export const dynamoMainTable = DynamoMainTable.create({
   documentClient: documentClient,
-  tableName: env.DYNAMODB_MAIN_TABLE_NAME,
+  /*
+   * Rover Pay: optional since STORAGE=postgres needs no table. This module is
+   * still imported (and the client built) in that mode, but never queried.
+   */
+  tableName: env.DYNAMODB_MAIN_TABLE_NAME ?? "unconfigured-dynamodb-table",
 });

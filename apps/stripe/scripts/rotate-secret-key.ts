@@ -29,6 +29,13 @@ const {
 
 const logger = createMigrationScriptLogger("RotateSecretKey");
 
+// DynamoDB-only script: the table name is optional in env since Rover Pay can run on Postgres.
+function requiredTableName(): string {
+  if (!env.DYNAMODB_MAIN_TABLE_NAME) throw new Error("DYNAMODB_MAIN_TABLE_NAME is required for this script");
+
+  return env.DYNAMODB_MAIN_TABLE_NAME;
+}
+
 Sentry.init({
   dsn: env.NEXT_PUBLIC_SENTRY_DSN,
   environment: env.ENV,
@@ -48,7 +55,7 @@ const runner = createDynamoDBSecretKeyRotationRunner({
   dryRun: dryRun ?? false,
   logger,
   documentClient,
-  tableName: env.DYNAMODB_MAIN_TABLE_NAME,
+  tableName: requiredTableName(),
   encryptedFieldNames: ["stripeRk", "stripeWhSecret"],
   decrypt: (value, key) => new Encryptor(key).decrypt(value),
   encrypt: (plaintext, key) => new Encryptor(key).encrypt(plaintext),

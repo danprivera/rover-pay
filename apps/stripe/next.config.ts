@@ -1,8 +1,18 @@
+import { fileURLToPath } from "node:url";
+
 import { withSentryConfig } from "@sentry/nextjs";
 import { type NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  /*
+   * Rover Pay runs in a container on Azure (rovershop-storefront#173), not on
+   * Vercel: NEXT_OUTPUT=standalone emits a self-contained server. The tracing
+   * root is the monorepo root so the workspace packages are included.
+   */
+  ...(process.env.NEXT_OUTPUT === "standalone"
+    ? { output: "standalone" as const, outputFileTracingRoot: fileURLToPath(new URL("../../", import.meta.url)) }
+    : {}),
   transpilePackages: [
     "@saleor/apps-logger",
     "@saleor/apps-otel",
@@ -21,6 +31,8 @@ const nextConfig: NextConfig = {
     "@aws-sdk/lib-dynamodb",
     "@aws-sdk/util-dynamodb",
     "dynamodb-toolbox",
+    // Rover Pay's Postgres storage: pg loads an optional native binding that must not be bundled.
+    "pg",
   ],
   webpack: (config, { isServer }) => {
     if (isServer) {

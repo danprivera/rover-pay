@@ -6,6 +6,8 @@
       "env": [
         "ALLOWED_DOMAIN_PATTERN",
         "APL",
+        "STORAGE",
+        "DATABASE_URL",
         "APP_API_BASE_URL",
         "APP_IFRAME_BASE_URL",
         "MANIFEST_APP_ID",
