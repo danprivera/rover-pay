@@ -10,7 +10,10 @@ import {
 
 import { env } from "@/lib/env";
 
-const stripeMainTableName = env.DYNAMODB_MAIN_TABLE_NAME;
+// DynamoDB-only script: the table name is optional in env since Rover Pay can run on Postgres.
+const stripeMainTableName = env.DYNAMODB_MAIN_TABLE_NAME ?? "";
+
+if (!stripeMainTableName) throw new Error("DYNAMODB_MAIN_TABLE_NAME is required for this script");
 
 try {
   const {

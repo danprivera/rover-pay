@@ -1,0 +1,15 @@
+# Rover Pay (rovershop-storefront#173): the Dockerfile copies the whole monorepo
+# into its prune stage, so anything here must never reach a build layer.
+**/.env
+**/.env.*
+!**/.env.example
+**/*.pem
+**/*.key
+**/.vercel
+.git
+**/node_modules
+**/.next
+**/.turbo
+**/coverage
+**/playwright-report
+**/test-results
